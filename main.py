@@ -160,58 +160,231 @@ HTML_PAGE = """
     <meta charset="UTF-8">
     <title>SysAdmin Simulator</title>
     <style>
-        :root { --bg: #0f0a1a; --panel: #1f1733; --border: #2d2148; --accent: #8b5cf6; --text: #e9e4f5; --muted: #9a8fb5; --ok: #34d399; --bad: #f87171; --gold: #fbbf24; }
+        :root { 
+            --bg: #0f0a1a; --panel: #1f1733; --border: #2d2148; 
+            --accent: #8b5cf6; --text: #e9e4f5; --muted: #9a8fb5; 
+            --ok: #34d399; --bad: #f87171; --gold: #fbbf24; 
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: radial-gradient(circle at 20% 0%, #1e1338 0%, var(--bg) 60%); color: var(--text); min-height: 100vh; display: flex; justify-content: center; }
-        .app { width: 100%; max-width: 1100px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-        .topbar { display: flex; align-items: center; gap: 20px; padding: 16px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap; }
-        .brand { font-weight: 800; font-size: 20px; color: #a78bfa; white-space: nowrap; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at 20% 0%, #1e1338 0%, var(--bg) 60%); 
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+        }
+        
+        /* Основной контейнер */
+        .app { 
+            width: 100%; 
+            max-width: 1600px; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Топбар */
+        .topbar { 
+            display: flex; 
+            align-items: center; 
+            gap: 24px; 
+            padding: 20px 24px; 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            flex-wrap: wrap; 
+        }
+        .brand { font-weight: 800; font-size: 24px; color: #a78bfa; white-space: nowrap; }
         .brand span { color: var(--muted); }
-        .stats { display: flex; gap: 20px; flex-wrap: wrap; flex: 1; font-size: 14px; }
+        .stats { display: flex; gap: 32px; flex-wrap: wrap; flex: 1; font-size: 16px; }
         .stat { display: flex; flex-direction: column; }
-        .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-val { font-weight: 700; }
+        .stat-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-val { font-weight: 700; font-size: 18px; }
         .stat-val.ok { color: var(--ok); } .stat-val.bad { color: var(--bad); }
-        .btn-top { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s; }
-        .btn-top:hover { border-color: var(--accent); color: #a78bfa; }
+        
+        /* Кнопки в топбаре */
+        .btn-top { 
+            background: transparent; 
+            border: 1px solid var(--border); 
+            color: var(--muted); 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 15px; 
+            transition: 0.2s; 
+            font-weight: 600;
+        }
+        .btn-top:hover { border-color: var(--accent); color: #a78bfa; background: rgba(139,92,246,0.1); }
         .btn-top.shop { border-color: var(--accent); color: #a78bfa; }
         .btn-top.leader { border-color: var(--gold); color: var(--gold); }
-        .main { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
-        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; min-height: 450px; }
-        .panel h2 { font-size: 22px; color: #a78bfa; }
-        .panel-body { flex: 1; }
-        .panel-body p { margin-bottom: 10px; line-height: 1.5; }
-        .muted { color: var(--muted); }
-        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;}
-        .btn-primary { background: linear-gradient(180deg, var(--accent), #6d3fd4); color: #fff; border: none; padding: 12px 22px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(139,92,246,0.3); }
-        .btn-primary:hover { transform: translateY(-1px); }
-        .btn-choice, .btn-shop { display: block; width: 100%; text-align: left; background: rgba(139,92,246,0.08); border: 1px solid var(--border); color: var(--text); padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-bottom: 8px; transition: 0.15s; }
-        .btn-choice:hover, .btn-shop:hover { border-color: var(--accent); background: rgba(139,92,246,0.18); }
-        .btn-shop { display: flex; justify-content: space-between; align-items: center; }
-        .btn-shop .price { color: #fbbf24; font-weight: 700; }
-        .btn-shop .desc { color: var(--muted); font-size: 12px; display: block; margin-top: 4px; }
-        .cmd-input { width: 100%; padding: 12px; background: #000; color: #34d399; border: 1px solid #444; border-radius: 8px; font-family: 'Consolas', monospace; font-size: 16px; outline: none; margin-bottom: 10px;}
-        .cmd-input:focus { border-color: var(--accent); }
-        .sidebar { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-        .sidebar h3 { font-size: 12px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; margin-top: 16px; letter-spacing: 0.5px;}
-        .sidebar h3:first-child { margin-top: 0; }
-        .skills { list-style: none; }
-        .skills li { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
-        .skills .lvl { color: #a78bfa; font-weight: 700; }
-        .log { list-style: none; font-size: 13px; max-height: 250px; overflow-y: auto; }
-        .log li { padding: 6px 0; border-bottom: 1px dashed var(--border); color: var(--muted); }
+
+        /* Сетка */
+        .main { 
+            display: grid; 
+            grid-template-columns: 1fr 380px; 
+            gap: 20px; 
+            flex: 1; 
+        }
         
-        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        .leaderboard-table th, .leaderboard-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-        .leaderboard-table th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+        /* Главная панель */
+        .panel { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 32px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 24px; 
+            height: 100%;
+            min-height: 500px;
+        }
+        .panel h2 { font-size: 28px; color: #a78bfa; margin-bottom: 10px; }
+        .panel-body { flex: 1; display: flex; flex-direction: column; gap: 16px;}
+        .panel-body p { font-size: 18px; line-height: 1.6; margin-bottom: 12px; }
+        .muted { color: var(--muted); }
+        
+        /* Блок кнопок */
+        .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+        
+        /* Основная кнопка */
+        .btn-primary { 
+            background: linear-gradient(180deg, var(--accent), #6d3fd4); 
+            color: #fff; 
+            border: none; 
+            padding: 16px 24px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            font-size: 16px;
+            cursor: pointer; 
+            transition: 0.2s; 
+            box-shadow: 0 4px 15px rgba(139,92,246,0.3); 
+            text-align: center;
+            width: fit-content;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
+        
+        /* Кнопки выбора ответа */
+        .btn-choice { 
+            display: block; 
+            width: 100%; 
+            text-align: left; 
+            background: rgba(139,92,246,0.08); 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            padding: 16px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-bottom: 12px; 
+            transition: 0.15s; 
+            font-weight: 500;
+        }
+        .btn-choice:hover { border-color: var(--accent); background: rgba(139,92,246,0.18); transform: translateX(4px); }
+        
+        /* Кнопки магазина */
+        .btn-shop { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 100%; 
+            background: rgba(139,92,246,0.08); 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            padding: 16px 24px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-bottom: 12px; 
+            text-align: left; 
+            transition: 0.15s; 
+        }
+        .btn-shop:hover { border-color: var(--accent); background: rgba(139,92,246,0.18); transform: translateX(4px); }
+        .btn-shop .price { color: var(--gold); font-weight: 700; font-size: 18px; }
+        .btn-shop .desc { color: var(--muted); font-size: 14px; display: block; margin-top: 4px; }
+        
+        /* Ввод команд */
+        .cmd-input { 
+            width: 100%; 
+            padding: 16px; 
+            background: #000; 
+            color: #34d399; 
+            border: 1px solid #444; 
+            border-radius: 8px; 
+            font-family: 'Consolas', monospace; 
+            font-size: 18px; 
+            outline: none; 
+            margin-bottom: 16px;
+        }
+        .cmd-input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(139,92,246,0.3); }
+
+        /* Сайдбар */
+        .sidebar { 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 24px; 
+            height: 100%; 
+        }
+        .sidebar h3 { 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            color: var(--muted); 
+            margin-bottom: 12px; 
+            margin-top: 24px; 
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+        .sidebar h3:first-child { margin-top: 0; }
+        
+        .skills { list-style: none; }
+        .skills li { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 8px 0; 
+            font-size: 16px; 
+            border-bottom: 1px dashed rgba(139,92,246,0.2); 
+        }
+        .skills li:last-child { border-bottom: none; }
+        .skills .lvl { color: #a78bfa; font-weight: 700; font-size: 18px; }
+        
+        .log { list-style: none; font-size: 14px; max-height: 300px; overflow-y: auto; padding-right: 5px;}
+        .log li { padding: 8px 0; border-bottom: 1px dashed var(--border); color: var(--muted); }
+        .log li:last-child { border-bottom: none; }
+        
+        /* Таблица лидеров */
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 16px; }
+        .leaderboard-table th, .leaderboard-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        .leaderboard-table th { color: var(--muted); font-size: 13px; text-transform: uppercase; }
         .leaderboard-table tr:hover { background: rgba(139,92,246,0.05); }
+        
         .status-win { color: var(--ok); font-weight: 700; }
         .status-lose { color: var(--bad); font-weight: 700; }
         .status-progress { color: var(--gold); font-weight: 700; }
         .status-ended { color: var(--muted); font-weight: 700; }
         
-        .reg-input { width: 100%; padding: 12px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; margin-bottom: 10px; }
+        /* Поля ввода (авторизация) */
+        .reg-input { 
+            width: 100%; 
+            padding: 16px; 
+            background: var(--bg); 
+            color: var(--text); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-size: 16px; 
+            outline: none; 
+            margin-bottom: 16px; 
+        }
         .reg-input:focus { border-color: var(--accent); }
+        
+        /* Адаптив */
+        @media (max-width: 1000px) {
+            .main { grid-template-columns: 1fr; }
+            .sidebar { height: auto; }
+        }
     </style>
 </head>
 <body>
@@ -231,7 +404,7 @@ HTML_PAGE = """
             </section>
             <aside class="sidebar">
                 <h3>Профиль</h3>
-                <div id="profile" style="margin-bottom:10px; font-weight:700; color:var(--accent);">Гость</div>
+                <div id="profile" style="margin-bottom:16px; font-weight:700; color:var(--accent); font-size:20px;">Гость</div>
                 <h3>Навыки</h3>
                 <ul class="skills" id="skills"></ul>
                 <h3>Журнал</h3>
@@ -320,7 +493,7 @@ HTML_PAGE = """
                 `<p class="muted">Введите никнейм и пароль. Если аккаунт уже существует, пароль будет проверен.</p>
                  <input type="text" id="nick-input" class="reg-input" placeholder="Ваш никнейм..." maxlength="20">
                  <input type="password" id="pass-input" class="reg-input" placeholder="Пароль..." maxlength="30">
-                 <p id="auth-error" style="color:var(--bad); display:none; margin-bottom:10px;"></p>`,
+                 <p id="auth-error" style="color:var(--bad); display:none; margin-bottom:10px; font-size:16px;"></p>`,
                 [{ text: 'Войти', onClick: authPlayer }]
             );
             setTimeout(() => document.getElementById('nick-input').focus(), 100);
@@ -382,13 +555,13 @@ HTML_PAGE = """
             let html = `<p>${t.desc}</p><p class="muted">Награда: ${t.reward}₽ | Репутация: +${t.rep} | Время: ${t.time} мин</p>`;
             
             if (t.input) {
-                html += `<div style="margin-top:20px;">
+                html += `<div style="margin-top:20px; width:100%;">
                     <input type="text" id="cmd-input" class="cmd-input" placeholder="Введите команду..." autocomplete="off">
-                    <div style="display:flex; gap:10px;">
+                    <div style="display:flex; gap:12px;">
                         <button class="btn-primary" onclick="submitCommand()">Выполнить</button>
-                        <button class="btn-primary" style="background:transparent; border:1px solid var(--border);" onclick="showHint()">Подсказка</button>
+                        <button class="btn-primary" style="background:transparent; border:1px solid var(--border); box-shadow:none;" onclick="showHint()">Подсказка</button>
                     </div>
-                    <p id="hint-text" style="color:var(--gold); margin-top:10px; display:none;">💡 ${t.hint}</p>
+                    <p id="hint-text" style="color:var(--gold); margin-top:16px; display:none; font-size:16px;">💡 ${t.hint}</p>
                 </div>`;
                 
                 setPanel(t.title, html, []);
@@ -733,7 +906,7 @@ async def answer_ticket(request: Request, sid: str = None):
         if is_correct:
             state["money"] += t["reward"]
             state["rep"] = min(100, state["rep"] + t["rep"])
-            state["nerv"] = min(100, state["nerv"] + 2)  # ТЫ ИЗМЕНИЛ ЗДЕСЬ НА +2 (было +1)
+            state["nerv"] = min(100, state["nerv"] + 2) # Твой баланс (+2)
             if "skill" in t:
                 skill_name = t["skill"]
                 state["skills"][skill_name] = state["skills"].get(skill_name, 1) + 1
@@ -794,7 +967,7 @@ async def end_day(request: Request, sid: str = None):
         return JSONResponse({"ok": False, "state": state})
         
     state["day"] += 1
-    state["nerv"] = min(100, state["nerv"] + 2)
+    state["nerv"] = min(100, state["nerv"] + 2) # Твой баланс (+2 при смене дня)
     state["log"].append(f"🌅 Наступил день {state['day']}!")
     
     if state["rep"] <= 0: state["game_over"] = "rep"
